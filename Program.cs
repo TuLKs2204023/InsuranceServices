@@ -75,19 +75,21 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFramework
 // Set the time of token forgot password validity
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(10));
 
-// Service Google login
-    .AddAuthentication(options =>
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-    .AddCookie(opt =>
-{
-    opt.LoginPath = "/Login/Welcome";
-    opt.ExpireTimeSpan = TimeSpan.FromDays(1);
-    opt.AccessDeniedPath = new PathString("/Account/AccessDenied");
+builder.Services
+	.AddAuthentication(options =>
+	{
+		options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+		options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+		//options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+	})
+	.AddCookie(opt =>
+	{
+		opt.LoginPath = "/Login/Welcome";
+		opt.ExpireTimeSpan = TimeSpan.FromDays(1);
+		opt.AccessDeniedPath = new PathString("/Account/AccessDenied");
 
-})
-    .AddGoogle(GoogleDefaults.AuthenticationScheme, opts =>
+	})
+	.AddGoogle(GoogleDefaults.AuthenticationScheme, opts =>
 {
     opts.ClientId = "1057076628569-h9uah1ovgr05s4gsl5kp1r46d4q9gjt2.apps.googleusercontent.com";
     opts.ClientSecret = "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";

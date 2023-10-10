@@ -157,7 +157,7 @@ namespace test0000001.Controllers
             await dbContext.CarInsuredObject!.AddAsync(newMotor);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index", "MotorInsurance");
+            return RedirectToAction("CreateHolder", "MotorInsurance");
         }
 
         [Authorize(Roles = "user")]

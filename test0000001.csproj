@@ -74,6 +74,7 @@
     <Folder Include="wwwroot\temp\contracts\LifeInsurance\" />
     <Folder Include="wwwroot\temp\dossiers\LifeInsurance\" />
     <Folder Include="wwwroot\temp\dossiers\LifeInsurance\" />
+    <Folder Include="wwwroot\temp\dossiers\LifeInsurance\" />
   </ItemGroup>
 
   <ItemGroup>

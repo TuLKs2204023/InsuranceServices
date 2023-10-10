@@ -489,13 +489,22 @@ namespace test0000001.Controllers
 		}
 		protected Policyholder GetHolder(int id)
 		{
-			return _db.Policyholder
+			var query = _db.Policyholder
 				.Include(h => h.Policy!.Duration)
 				.Include(h => h.Policy!.InsuranceCategory)
 				.Include(h => h.User)
 				.Include(h => h.Payments)
-				.Where(h => h.Id == id)
-				.FirstOrDefault()!;
+				.Where(h => h.Id == id);
+
+			bool hasInsuranceCategoryId4 = query.Any(h => h.Policy!.InsuranceCategoryId == 4);
+
+			if (hasInsuranceCategoryId4)
+			{
+				query = query.Include(h => h.CarInsuredObject);
+			}
+
+			Policyholder? result = query.FirstOrDefault();
+			return result;
 		}
 		protected async void CreateInsurPayment(int holderId, string method)
 		{

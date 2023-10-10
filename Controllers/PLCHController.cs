@@ -66,14 +66,22 @@ namespace test0000001.Controllers
         }
 
         protected Policyholder GetHolderById(int id) {
-            return _db.Policyholder
-                .Include(p => p.User)
-                .Include(p => p.Policy!.Duration)
-                .Include(p => p.Policy!.InsuranceCategory)
-                .Include(p => p.Payments)
-                .Include(p => p.CarInsuredObject)
-                .Where(p => p.Id == id)
-                .FirstOrDefault()!;
-        }
+			var query = _db.Policyholder
+				.Include(h => h.Policy!.Duration)
+				.Include(h => h.Policy!.InsuranceCategory)
+				.Include(h => h.User)
+				.Include(h => h.Payments)
+				.Where(h => h.Id == id);
+
+			bool hasInsuranceCategoryId4 = query.Any(h => h.Policy!.InsuranceCategoryId == 4);
+
+			if (hasInsuranceCategoryId4)
+			{
+				query = query.Include(h => h.CarInsuredObject);
+			}
+
+			Policyholder? result = query.FirstOrDefault();
+			return result;
+		}
     }
 }

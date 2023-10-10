@@ -296,7 +296,8 @@ namespace test0000001.Controllers
         protected List<Question> GetQuestions()
         {
             var healthCate = GetInsurCate();
-            return _db.Questions.Where(q => q.InsuranceCategoryId == healthCate.Id).ToList();
+            List<Question>? list = _db.Questions.Where(q => q.InsuranceCategoryId == healthCate.Id).ToList();
+			return list;
         }
 
         protected List<Duration> FilterDurationByPrice(decimal minPrice, decimal maxPrice)
