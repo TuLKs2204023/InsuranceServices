@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "HolderDetails";
     Payment lastPaid = Model.LastestPayment()!;
+    string GetCateShortName(string input)
+    {
+        string[] words = input.Split(' ');
+        string output = string.Join("", words.Select(w => w[0] + w[1]));
+        return output;
+    }
 }
 
 @section Css{
@@ -60,13 +66,19 @@
 
 <div class="container card p-5 shadow-lg" style="top: -80px">
     <div class="row">
-        <h1 class="col-8">Policy Contract ID: <span class="fw-bold">#HI-CTGRY-@Model.Id</span> </h1>
+        <h1 class="col-8">Policy Contract ID: <span class="fw-bold">#@(GetCateShortName(Model.Policy!.InsuranceCategory!.Name!))-CTGRY-@Model.Id</span> </h1>
         <div class="col-4">
             <h2 class="float-end"><span class="badge badge-lg rounded-pill bg-@Model.StatusColor()">@Model.Status</span></h2>
         </div>
     </div>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            Type
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Policy!.InsuranceCategory!.Name)
+        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Policy)
         </dt>
@@ -128,6 +140,67 @@
             </dd>
         }
 
+        @if (Model.CarInsuredObject != null)
+        {
+            <dt class="col-sm-2 my-4">
+                @Html.DisplayNameFor(model => model.Object)
+            </dt>
+            <dd class="col-sm-10 mt-4">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Years of manufacture</th>
+                        <td> @Model.CarInsuredObject.YearsOfManufacture</td>
+                    </tr>
+                    <tr>
+                        <th>Automaker</th>
+                        <td> @Model.CarInsuredObject.Automaker</td>
+                    </tr>
+                    <tr>
+                        <th>Motor brand</th>
+                        <td> @Model.CarInsuredObject.CarBand</td>
+                    </tr>
+                    <tr>
+                        <th>Engine Number</th>
+                        <td> @Model.CarInsuredObject.EngineNumber</td>
+                    </tr>
+                    <tr>
+                        <th>Frame Number</th>
+                        <td> @Model.CarInsuredObject.FrameNumber</td>
+                    </tr>
+                    <tr>
+                        <th>License Plate Number</th>
+                        <td> @Model.CarInsuredObject.LicensePlateNumber</td>
+                    </tr>
+                    <tr>
+                        <th>Engine Displacement</th>
+                        <td> @Model.CarInsuredObject.EngineDisplacement</td>
+                    </tr>
+                    <tr>
+                        <th>Color </th>
+                        <td> @Model.CarInsuredObject.Color</td>
+                    </tr>
+                    <tr>
+                        <th>Register in city</th>
+                        <td> @Model.CarInsuredObject.CityOfCarReg</td>
+                    </tr>
+                    <tr>
+                        <th>Front VIN</th>
+                        <td>
+                            <img src="@Url.Content("~/MotorInsurance/IdImages/" +  @Model.CarInsuredObject.FrontImg)" width="500" height="300" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Back VIN</th>
+                        <td>
+                            <img src="@Url.Content("~/MotorInsurance/IdImages/" +  @Model.CarInsuredObject.BackImg)" width="500" height="300" />
+                        </td>
+                    </tr>
+
+                </table>
+            </dd>
+
+        }
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.StartDay)
         </dt>
@@ -144,16 +217,15 @@
 
     @if (Model.Status == "Waiting For Payment")
     {
-        <div class="card shadow-lg">
-            <h5 class="card-header fs-3">Required Payment</h5>
+        <div class="card shadow-lg border border-3 border-warning bg-light">
+            <h5 class="card-header fs-3 bg-light"><span class="float-start">Required Payment</span><span class="float-end">Peroid: @(Model.LastestPayment() == null ? "First Payment" : (Model.Policy!.Duration!.TotalPeriod == Model.LastestPayment()!.PaymentPeriod + 1 ? "Last Period" : (Model.LastestPayment()!.PaymentPeriod + 1)))</span></h5>
             <div class="card-body">
-                <h5 class="card-title text-center">Peroid: @(Model.LastestPayment() == null ? "First Payment" : (Model.Policy!.Duration!.TotalPeriod == Model.LastestPayment()!.PaymentPeriod + 1 ? "Last Period" : (Model.LastestPayment()!.PaymentPeriod + 1)))</h5>
-                <p class="card-text text-center">Amount: @Model.EachPeriodPrice().ToString("C")</p>
-                <p class="card-text text-center text-danger">*Paypal will charge 2% of the amount for fee.</p>
-                <p class="card-text text-center text-danger">*If no payment is received after 3 days since required payment was shown, your policy holder will be rejected forever.</p>
+                <p class="card-text text-center fs-4 fw-bold">Amount: @Model.EachPeriodPrice().ToString("C")</p>
+                <p class="card-text text-center text-warning fw-bold">*Paypal will charge 2% of the amount for fee.</p>
+                <p class="card-text text-center text-warning fw-bold">*If no payment is received after 3 days since required payment was shown, your policy holder will be rejected forever.</p>
                 <form asp-action="PaymentWithPaypal" asp-controller="Home" method="post" class="text-center">
                     <input type="hidden" name="holderId" value="@Model.Id" />
-                    <button type="submit" class="btn border border-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" alt="Check out with PayPal" /></button>
+                    <button type="submit" class="btn btn-lg border border-2 border-primary"><img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" alt="Check out with PayPal" /></button>
                 </form>
             </div>
         </div>
@@ -161,17 +233,17 @@
 
     @if (Model.Payments!.Count() > 0)
     {
-        <fieldset class="border border-3 rounded shadow-sm bg-light pt-4 pb-3 mt-5">
+        <fieldset class="border border-5 rounded shadow-sm bg-light pt-4 pb-3 mt-5">
             <legend class="border border-2 rounded shadow bg-custom-blue text-light fs-3">Paid Payments</legend>
             @foreach (var item in Model.Payments!)
             {
-                <div class="card shadow-lg text-center border border-success m-5">
+                <div class="card shadow-lg text-center border border-3 border-success m-5">
                     <div class="card-header fs-3">
                         Period: @item.PaymentPeriod <span class="float-end text-success"><i class="fa-solid fa-circle-check"></i></span>
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">Paid At: @item.CreatedAt.ToString("dd/MM/yyyy").Replace('/', '-') - Method: @item.Method</h5>
-                        <p class="card-text">@item.Amount.ToString("C")</p>
+                        <h5 class="card-title fs-4">Paid At: @item.CreatedAt.ToString("dd/MM/yyyy").Replace('/', '-') - Method: @item.Method</h5>
+                        <p class="card-text fs-3 fw-bold">@item.Amount.ToString("C")</p>
                     </div>
                 </div>
             }

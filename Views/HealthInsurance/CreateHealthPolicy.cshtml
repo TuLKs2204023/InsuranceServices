@@ -72,6 +72,11 @@
 </div>
 
 <script>
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    });
+
     document.querySelector("#durationCheck").addEventListener("click", premiumSubmit);
     function premiumSubmit(e) {
         e.preventDefault();
@@ -90,7 +95,7 @@
                     $("#term").html('<option value ="">--Select Term--</option>');
                     $.each(res.list, function (key, value) {
                         $("#term").append('<option value="' + value
-                            .id + '">' + `Term Duration: ${value.term} (in month) - Total Periods: ${value.totalPeriod} (time/term)` + '</option>');
+                            .id + '">' + `Term Duration: ${value.term} (in month) - Total Periods: ${value.totalPeriod} (time/term) - Premium: ${formatter.format(value.priceAmount)}` + '</option>');
                     });
                 }
             }

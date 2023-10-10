@@ -1,9 +1,9 @@
-
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
 using System.Data;
 using test0000001.DB;
 using test0000001.Models;
@@ -52,53 +52,115 @@ namespace test0000001.Controllers
 
             return View(car);
         }
+        [HttpGet]
+        public IActionResult IntroduceMotorInsurance()
+        {
+            return View();
+        }
 
-        // GET: Home/MotorInsurance
+
+
+
+
+
+        [Authorize(Roles = "user")]
         [HttpGet]
         public IActionResult TakeInforCar()
         {
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> TakeInforCar(CarInsuredObject newCar)
+        public async Task<IActionResult> TakeInforCar(CarInsuredObject newMotor, IFormFile[] idPhotos)
         {
-            if (newCar.YearsOfManufacture == DateTime.MinValue)
+            if (newMotor.YearsOfManufacture == DateTime.MinValue)
             {
                 ModelState.AddModelError("YearsOfManufacture", "Years of Manufacture is required.");
             }
 
-            if (string.IsNullOrEmpty(newCar.Automaker))
+            if (string.IsNullOrEmpty(newMotor.Automaker))
             {
                 ModelState.AddModelError("Automaker", "Automaker is required.");
             }
 
-            if (string.IsNullOrEmpty(newCar.CarBand))
+            if (string.IsNullOrEmpty(newMotor.CarBand))
             {
                 ModelState.AddModelError("CarBand", "Car Band is required.");
             }
 
-            if (string.IsNullOrEmpty(newCar.CarType))
+            if (string.IsNullOrEmpty(newMotor.CarType))
             {
                 ModelState.AddModelError("CarType", "Car Type is required.");
             }
 
-            if (string.IsNullOrEmpty(newCar.CityOfCarReg))
+            if (string.IsNullOrEmpty(newMotor.EngineNumber))
+            {
+                ModelState.AddModelError("EngineNumber", "Engine Number is required.");
+            }
+            if (string.IsNullOrEmpty(newMotor.FrameNumber))
+            {
+                ModelState.AddModelError("FrameNumber", "Frame Number is required.");
+            }
+            if (string.IsNullOrEmpty(newMotor.LicensePlateNumber))
+            {
+                ModelState.AddModelError("LicensePlateNumber", "License Plate Number is required.");
+            }
+            if (string.IsNullOrEmpty(newMotor.EngineDisplacement))
+            {
+                ModelState.AddModelError("EngineDisplacement", "Engine Displacement is required.");
+            }
+            if (string.IsNullOrEmpty(newMotor.Color))
+            {
+                ModelState.AddModelError("Color", "Color is required.");
+            }
+
+            if (string.IsNullOrEmpty(newMotor.CityOfCarReg))
             {
                 ModelState.AddModelError("CityOfCarReg", "City of Car Registration is required.");
             }
+
             if (!ModelState.IsValid)
             {
-                // If ModelState is not valid, redisplay the form with validation errors
-                return View(newCar);
+                return View(newMotor);
+            }
+
+            // Lưu ảnh vào thư mục wwwroot/MotorInsurance/IdImages/
+            if (idPhotos != null && idPhotos.Length > 0)
+            {
+                for (int i = 0; i < idPhotos.Length; i++)
+                {
+                    var item = idPhotos[i];
+                    if (item != null && item.Length > 0)
+                    {
+                        var filePath = Path.Combine("wwwroot/MotorInsurance/IdImages/", item.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await item.CopyToAsync(stream);
+                        }
+
+                        if (i == 0)
+                        {
+                            newMotor.FrontImg = item.FileName;
+                        }
+                        else
+                        {
+                            newMotor.BackImg = item.FileName;
+                        }
+                    }
+                }
             }
 
             var user = await GetUser();
-            newCar.UserId = user.Id;
-            await dbContext.CarInsuredObject!.AddAsync(newCar);
+            newMotor.UserId = user.Id;
+
+            // Thêm mới dữ liệu vào cơ sở dữ liệu
+            await dbContext.CarInsuredObject!.AddAsync(newMotor);
             await dbContext.SaveChangesAsync();
+
             return RedirectToAction("Index", "MotorInsurance");
         }
 
+        [Authorize(Roles = "user")]
         [HttpGet]
         public async Task<IActionResult> CreateHolder()
         {
@@ -134,7 +196,7 @@ namespace test0000001.Controllers
                     await dbContext.SaveChangesAsync();
 
                     // Lưu dữ liệu thành công, chuyển hướng hoặc thực hiện các hành động khác ở đây
-                    return RedirectToAction("Index", "MotorInsurance");
+                    return RedirectToAction("PolicyHolder", "Home");
                 }
                 else
                 {
@@ -175,7 +237,7 @@ namespace test0000001.Controllers
             }
         }
 
-        [Authorize(Roles = ("admin"))]
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> MotorPolicyList()
         {
@@ -184,6 +246,7 @@ namespace test0000001.Controllers
             return policies.Count == 0 ? View() : View(policies);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> CreateMotorPolicy()
         {
@@ -202,6 +265,7 @@ namespace test0000001.Controllers
             return RedirectToAction("MotorPolicyList", "MotorInsurance");
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> EditMotorPolicy(int id)
         {
@@ -223,6 +287,7 @@ namespace test0000001.Controllers
             return RedirectToAction("MotorPolicyList", "MotorInsurance");
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> DeleteMotorPolicy(int id)
         {

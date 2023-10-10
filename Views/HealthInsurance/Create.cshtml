@@ -59,6 +59,8 @@
         .card-input-element:checked + .card-input .card-header .buy-check, .card-input-gender-element:checked + .card-input .card-body .gender-check {
             display: inline-block;
             color: green;
+            position: absolute;
+            right: 10px;
         }
 
     .w-15 {
@@ -299,7 +301,6 @@
         let birthDate = new Date(dob);
         let today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
-        console.log(age)
         if (age = 0 || age > 80) {
             dobWarn.textContent = "Age must be greater than 0 and less than 80";
             dobWarn.classList.remove("d-none");
@@ -319,16 +320,18 @@
     
     function readFile(input) {
         let file = input.files[0];
-        
+        const imgTag = document.getElementById("photoo" + input.getAttribute("data-photoo-side"));
 
         if (!file.type.startsWith('image/')) {
-            input.value = '';
+            input.value = "";
+            imgTag.src = "";
+            imgTag.classList.remove("d-block");
+            imgTag.classList.add("d-none");
             return;
         } else { 
             let reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
-                const imgTag = document.getElementById("photoo" + input.getAttribute("data-photoo-side"));
                 imgTag.classList.remove("d-none");
                 imgTag.classList.add("d-block");
                 imgTag.src = reader.result;

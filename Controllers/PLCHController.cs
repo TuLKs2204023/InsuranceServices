@@ -69,7 +69,9 @@ namespace test0000001.Controllers
             return _db.Policyholder
                 .Include(p => p.User)
                 .Include(p => p.Policy!.Duration)
+                .Include(p => p.Policy!.InsuranceCategory)
                 .Include(p => p.Payments)
+                .Include(p => p.CarInsuredObject)
                 .Where(p => p.Id == id)
                 .FirstOrDefault()!;
         }

@@ -61,6 +61,7 @@
     <Folder Include="wwwroot\lib\jquery-validation\dist\" />
     <Folder Include="wwwroot\lib\jquery\" />
     <Folder Include="wwwroot\lib\jquery\dist\" />
+    <Folder Include="wwwroot\MotorInsurance\IdImages\" />
     <Folder Include="wwwroot\temp\contracts\LifeInsurance\" />
     <Folder Include="wwwroot\temp\dossiers\LifeInsurance\" />
     <Folder Include="wwwroot\lib\bootstrap\" />
@@ -77,7 +78,6 @@
 
   <ItemGroup>
     <None Include="Views\MotorInsurance\CreateHolder.cshtml" />
-    <None Include="Views\MotorInsurance\CreateHolder_test1.cshtml" />
     <None Include="Views\MotorInsurance\Index.cshtml" />
     <None Include="Views\MotorInsurance\TakeInforCar.cshtml" />
   </ItemGroup>

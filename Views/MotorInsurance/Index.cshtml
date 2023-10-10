@@ -6,6 +6,14 @@
 <div class="form-group">
     <a asp-action="CreateHolder" class="btn btn-primary">Counsel policy</a> 
 </div>
+@if (!string.IsNullOrEmpty(ViewBag.MsgError))
+{
+    <h5 class="text-danger">@ViewBag.MsgError</h5>
+}
+@if (!string.IsNullOrEmpty(ViewBag.MsgSuccess))
+{
+    <h5 class="text-success">@ViewBag.MsgSuccess</h5>
+}
 <div class="site-section">
     <div class="container">
         <div class="row">

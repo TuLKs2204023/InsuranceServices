@@ -491,6 +491,7 @@ namespace test0000001.Controllers
 		{
 			return _db.Policyholder
 				.Include(h => h.Policy!.Duration)
+				.Include(h => h.Policy!.InsuranceCategory)
 				.Include(h => h.User)
 				.Include(h => h.Payments)
 				.Where(h => h.Id == id)
@@ -500,8 +501,6 @@ namespace test0000001.Controllers
 		{
 			Policyholder holder = GetHolder(holderId);
 			decimal price = holder.EachPeriodPrice();
-			var tax = price * 2 / 100;
-			var shipping = 0;
 			var subTotal = price * 1;
 
 			holder.Status = "Activated";
@@ -517,7 +516,7 @@ namespace test0000001.Controllers
 				CreatedAt = DateTime.Now,
 				Policyholder = holder,
 				Method = method,
-				Amount = tax + shipping + subTotal,
+				Amount = subTotal,
 				PaymentPeriod = lastPaid != null ? lastPaid.PaymentPeriod + 1 : 1,
 			};
 

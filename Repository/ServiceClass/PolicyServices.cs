@@ -49,6 +49,8 @@ namespace test0000001.Repository.ServiceClass
 
         public async Task<bool> AddPolicy(Policy newPolicy)
         {
+            Duration? duration = db.Duration.Find(newPolicy.DurationId);
+            newPolicy.Premium = duration!.PriceAmount;
             await db.Policy!.AddAsync(newPolicy);
             await db.SaveChangesAsync();
             return true;
@@ -57,11 +59,12 @@ namespace test0000001.Repository.ServiceClass
         public async Task<bool> EditPolicy(Policy editPolicy)
         {
             var policy = await db.Policy!.SingleOrDefaultAsync(u => u.Id!.Equals(editPolicy.Id));
+            Duration? duration = db.Duration.Find(editPolicy.DurationId);
             if (policy != null)
             {
                 policy.InsuranceCategory = editPolicy.InsuranceCategory;
                 policy.Duration = editPolicy.Duration;
-                policy.Premium = editPolicy.Premium;
+                policy.Premium = duration!.PriceAmount;
                 policy.Name = editPolicy.Name;
                 policy.Description = editPolicy.Description;
                 await db.SaveChangesAsync();
