@@ -1,0 +1,59 @@
+﻿@model test0000001.Models.CarInsuredObject
+@{
+    ViewData["Title"] = "TakeInforCar";
+}
+
+<div class="container w-75">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Register For Private Information</h4>
+            <h5 class="text-danger">@ViewBag.MsgError</h5>
+            <h5 class="text-success">@ViewBag.MsgSuccess</h5>
+        </div>
+        <div class="card-content">
+            <div class="card-body">
+                <form asp-action="TakeInforCar">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="first-name-vertical">Years of manufacture</label>
+                                    <input asp-for="YearsOfManufacture" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Automaker</label>
+                                <input asp-for="Automaker" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label>Car band</label>
+                                <input asp-for="CarBand" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <div class="group">
+                                    <label>Car type</label>
+                                    <input asp-for="CarType" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Car registration in the city</label>
+                                <input asp-for="CityOfCarReg" class="form-control" />
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                <div class="col-12 d-flex justify-content-center">
+                                    <button type="submit" class="btn btn-primary me-1 mb-1"> Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
