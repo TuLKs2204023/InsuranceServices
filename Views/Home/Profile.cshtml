@@ -154,7 +154,7 @@
 											
 											@if (DateTime.Now.Year - Model.DateOfBirth.Year <= 150 && DateTime.Now.Year - Model.DateOfBirth.Year >= 18)
 											{
-												<label class="form-control-label">Day of Birth</label>
+												<label class="form-control-label">Day of Birth  <span class="text-danger">(yyyy-dd-mm)</span></label>
 												<input type="text" class="form-control form-control-alternative" placeholder="@Model.DateOfBirth.ToString("yyyy/MM/dd").Replace('/','-')" disabled>
 											}
 											else

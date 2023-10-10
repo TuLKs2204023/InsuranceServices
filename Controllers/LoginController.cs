@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using test0000001.Models;
 using static System.Net.WebRequestMethods;
 using Microsoft.AspNetCore.Authentication.Google;
+using System.Linq;
 
 namespace test0000001.Controllers
 {
@@ -100,20 +101,18 @@ namespace test0000001.Controllers
 		[AllowAnonymous]
 		public IActionResult GoogleLogin()
 		{
-			//string redirectUrl = Url.Action("GoogleResponse", "Login");
-			//var properties = signinMgr.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
 			//return new ChallengeResult("Google", properties);
-			var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
-			return Challenge(properties,GoogleDefaults.AuthenticationScheme);
+			//var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
+			string redirectUrl = Url.Action("GoogleResponse")!;
+			var properties = signinMgr.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
+			return Challenge(properties, GoogleDefaults.AuthenticationScheme);
 		}
         [Route("Login/GoogleResponse")]
         [AllowAnonymous]
 		public async Task<IActionResult> GoogleResponse(Registration model)
 		{
-			//var info = await signinMgr.GetExternalLoginInfoAsync();
-			var info = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-	
+			var info = await signinMgr.GetExternalLoginInfoAsync();
+			//var info = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);	
             var claims = info.Principal!.Identities
                 .FirstOrDefault()!.Claims.Select(claim => new
                 {
@@ -123,8 +122,9 @@ namespace test0000001.Controllers
                     claim.Value
                 });
 
-           
-            var userExist = await userMgr.FindByEmailAsync(info.Principal.FindFirst(ClaimTypes.Email)!.Value);
+
+			//var userExist = await userMgr.FindByEmailAsync(info.Principal.FindFirst(ClaimTypes.Email)!.Value);
+			var userExist = await userMgr.FindByEmailAsync(claims.First(m => m.Type.EndsWith("emailaddress")).Value);
 			if(userExist != null)
 			{
 				ViewBag.count = "1";
@@ -136,10 +136,7 @@ namespace test0000001.Controllers
 			else
 			{
 				string Name = info.Principal.FindFirst(ClaimTypes.Name)!.Value;
-				Name= ConvertVN(Name).ToString().Replace(" ","");
-				
-
-
+				Name= ConvertVN(Name).ToString().Replace(" ","").Replace("(","").Replace(")","");
 				model.FirstName = Name;
 				model.LastName = "viaGoogle";
 				model.Email = info.Principal.FindFirst(ClaimTypes.Email)!.Value;

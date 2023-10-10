@@ -5,9 +5,11 @@ using test0000001.Repository.ServiceClass.LifeInsurance;
 
 namespace test0000001.Controllers.Admin
 {
+    using Microsoft.AspNetCore.Authorization;
     using test0000001.Models.LifeInsurance;
 
     [Route("Admin/[Controller]/[Action]/{id?}")]
+    [Authorize(Roles = "admin")]
     public class LifeInsuranceHolderController : Controller
     {
         private readonly PolicyHolderViewService _holderView;

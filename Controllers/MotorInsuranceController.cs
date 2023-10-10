@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using test0000001.DB;
 using test0000001.Models;
 using test0000001.Repository.InterfaceClass;
@@ -15,17 +18,21 @@ namespace test0000001.Controllers
         private IPolicy policyService;
         private IMotorInsurance motorInsSer;
 
+        private IDuration durationService;
+
         private DatabaseContext dbContext;
 
         private readonly UserManager<ApplicationUser> userManager;
         public MotorInsuranceController
-            (IPolicy _policyService, 
-            DatabaseContext _dbContext, 
-            IMotorInsurance _motorInsSer, 
-            IInsuranceCategory _insurCateSer, 
+            (IDuration _durationService,
+            IPolicy _policyService,
+            DatabaseContext _dbContext,
+            IMotorInsurance _motorInsSer,
+            IInsuranceCategory _insurCateSer,
             UserManager<ApplicationUser> _userManager)
         {
             insurCateSer = _insurCateSer;
+            durationService = _durationService;
             policyService = _policyService;
             dbContext = _dbContext;
             motorInsSer = _motorInsSer;
@@ -86,7 +93,7 @@ namespace test0000001.Controllers
             }
 
             var user = await GetUser();
-            newCar.UserId = user.Id; 
+            newCar.UserId = user.Id;
             await dbContext.CarInsuredObject!.AddAsync(newCar);
             await dbContext.SaveChangesAsync();
             return RedirectToAction("Index", "MotorInsurance");
@@ -106,11 +113,6 @@ namespace test0000001.Controllers
                 ViewBag.CarInsuredObjects = carInsuredObjects;
                 ViewBag.UserId = user.Id;
                 return View();
-
-
-
-
-
             }
             catch (Exception ex)
             {
@@ -157,66 +159,6 @@ namespace test0000001.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateHolder(Policyholder policyHolder)
-        //{
-        //    try
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            // Kiểm tra xem cặp userId và policyId đã tồn tại trong Policyholder chưa
-        //            var existingPolicyHolder = await dbContext.Policyholder
-        //                .FirstOrDefaultAsync(ph => ph.UserId == policyHolder.UserId && ph.PolicyId == policyHolder.PolicyId);
-
-        //            if (existingPolicyHolder != null)
-        //            {
-        //                // Cặp userId và policyId đã tồn tại, trả về thông báo đã đăng ký rồi
-        //                ModelState.AddModelError(string.Empty, "This user has already registered for this policy.");
-        //                return View();
-        //            }
-
-        //            // Nếu cặp userId và policyId chưa tồn tại, thêm dữ liệu mới
-        //            await dbContext.Policyholder.AddAsync(policyHolder);
-        //            int affectedRecords = await dbContext.SaveChangesAsync();
-
-        //            if (affectedRecords > 0)
-        //            {
-        //                // Dữ liệu đã được lưu thành công, chuyển hướng hoặc thực hiện các hành động khác ở đây
-        //                return RedirectToAction("Index", "MotorInsurance");
-        //            }
-        //            else
-        //            {
-        //                // Có lỗi khi thêm dữ liệu, có thể xử lý lỗi ở đây hoặc trả về View với thông báo lỗi
-        //                ModelState.AddModelError(string.Empty, "There was an error while saving data. Please try again.");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // Trả về View với ModelState không hợp lệ để hiển thị thông báo lỗi
-        //            ModelState.AddModelError(string.Empty, "There are errors in the form. Please correct them.");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // In inner exception để xem lỗi cụ thể
-        //        ModelState.AddModelError(string.Empty, "An error occurred while processing your request.");
-        //    }
-
-        //    // Nếu bạn đến đây, có nghĩa có lỗi xảy ra. Trả về View với thông báo lỗi hoặc xử lý lỗi ở đây nếu cần.
-        //    return View();
-        //}
-
-
-
-
-
-        //protected async Task<ApplicationUser> GetUser()
-        //{
-        //    string username = User.Identity!.Name!.ToString();
-        //    ApplicationUser user = await userManager.FindByNameAsync(username);
-        //    return user;
-        //}
-
         protected async Task<ApplicationUser> GetUser()
         {
             if (User.Identity != null && User.Identity.Name != null)
@@ -231,6 +173,83 @@ namespace test0000001.Controllers
                 // Có thể trả về null hoặc thông báo lỗi tùy thuộc vào logic của bạn.
                 return null;
             }
+        }
+
+        [Authorize(Roles = ("admin"))]
+        [HttpGet]
+        public async Task<IActionResult> MotorPolicyList()
+        {
+            var insurCate = await insurCateSer.GetCategoryById(4);
+            var policies = await dbContext.Policy.Include(t => t.Duration).Where(p => p.InsuranceCategoryId == insurCate!.Id).ToListAsync();
+            return policies.Count == 0 ? View() : View(policies);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateMotorPolicy()
+        {
+
+            var insuranceCategory = await insurCateSer.GetAllCategory();
+            ViewBag.CategoryId = new SelectList(insuranceCategory, "Id", "Name");
+            var duration = await durationService.GetAllDuration();
+            ViewBag.DurationId = new SelectList(duration, "Id", "Term");
+
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateMotorPolicy(Policy newPolicy)
+        {
+            await policyService.AddPolicy(newPolicy);
+            return RedirectToAction("MotorPolicyList", "MotorInsurance");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditMotorPolicy(int id)
+        {
+            var insuranceCategory = await insurCateSer.GetAllCategory();
+            //ViewBag.TeamId = new SelectList(teams.Select(x => x.Id));
+            ViewBag.CategoryId = new SelectList(insuranceCategory, "Id", "Name");
+            var duration = await durationService.GetAllDuration();
+            ViewBag.DurationId = new SelectList(duration, "Id", "Term");
+
+            var model = await policyService.GetPolicyById(id);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditMotorPolicy(Policy editPolicy)
+        {
+            await policyService.EditPolicy(editPolicy);
+            TempData["msg"] = "Congratulation !!! Edit Success";
+            return RedirectToAction("MotorPolicyList", "MotorInsurance");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMotorPolicy(int id)
+        {
+            try
+            {
+                var model = await policyService.DeletePolicy(id);
+                TempData["msg"] = "Delete Policy Success";
+                return RedirectToAction("MotorPolicyList", "MotorInsurance");
+
+            }
+            catch (Exception)
+            {
+                ViewBag.errormsg = "Delete Policy Fail";
+                return RedirectToAction("MotorPolicyList", "MotorInsurance");
+            }
+        }
+
+        //CHƯA CÓ VIEW
+        public async Task<IActionResult> MotorObjectList()
+        {
+            //Lấy tất cả car theo user id
+            var user = await GetUser();
+            var MotorObject = await dbContext.CarInsuredObject!
+            .Where(p => p.UserId == user.Id) // So sánh với user.Id mà không cần ép kiểu
+                .ToListAsync();
+
+            return View(MotorObject);
         }
 
     }

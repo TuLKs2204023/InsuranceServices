@@ -50,6 +50,8 @@ namespace test0000001.Models
         }
         public int MonthPerPeriod()
         {
+            if (this.Policy.Duration.TotalPeriod == null || this.Policy.Duration.TotalPeriod == 0)
+                return 0;
             return this.Policy!.Duration!.Term / this.Policy.Duration.TotalPeriod;
         }
         public static Dictionary<string, string> ConvertObject(string obj)

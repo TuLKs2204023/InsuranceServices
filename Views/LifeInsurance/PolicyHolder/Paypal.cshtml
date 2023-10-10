@@ -128,7 +128,8 @@
                         return response.json().then(error => { throw error; });
                     }
 
-                    window.location.href = "@Url.Action("PaypalSuccess")";
+                    window.location.href = "/LifeInsuranceHolder/@Model.PolicyHolderId/PaypalSuccess/@Model.PaymentScheduleId";
+                    //"@Url.Action("PaypalSuccess")";
                 }).catch(error => alert(error.message));
             }
         }).render('#paypal-button-container');

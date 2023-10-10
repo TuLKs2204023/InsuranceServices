@@ -26,7 +26,20 @@ namespace test0000001.Repository.ServiceClass.LifeInsurance
                     .Include(m => m.Policy)
                     .ThenInclude(p => p!.Duration)
                     .Include(m => m.LifeInsuredObject)
-                    .Where(m => m.Policy!.InsuranceCategoryId.Equals(1))
+                    .Where(m => m.Policy != null && m.Policy.InsuranceCategoryId.Equals(1))
+                    .ToList();
+        }
+
+        public IEnumerable<Policyholder> GetByUserId(string userId)
+        {
+            return _dbContext.Policyholder
+                    .Include(m => m.User)
+                    .Include(m => m.Policy)
+                    .ThenInclude(p => p!.Duration)
+                    .Include(m => m.LifeInsuredObject)
+                    .Where(m => m.Policy != null && m.User != null &&
+                        m.User.Id.Equals(userId) &&
+                        m.Policy.InsuranceCategoryId.Equals(1))
                     .ToList();
         }
 

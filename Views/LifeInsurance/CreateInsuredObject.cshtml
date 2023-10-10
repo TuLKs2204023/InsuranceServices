@@ -202,7 +202,7 @@
         }
 
         $.validator.addMethod('startdate', function (value, element, params) {
-            return new Date(value) > addDays(new Date(), 7);    //it's valid if it's a future date
+            return new Date(value) > addDays(new Date(), 3);    //it's valid if it's a future date
         });
 
         $.validator.unobtrusive.adapters.add('startdate', function (options) {

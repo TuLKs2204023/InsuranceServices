@@ -20,6 +20,5 @@ namespace test0000001.Models
         public string? CityOfCarReg { get; set; }
         public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
-
     }
 }

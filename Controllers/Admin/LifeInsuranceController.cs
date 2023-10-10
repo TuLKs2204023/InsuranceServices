@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using test0000001.Extensions;
 using test0000001.Models;
@@ -8,6 +10,7 @@ using test0000001.Repository.ServiceClass.LifeInsurance;
 namespace test0000001.Controllers.Admin
 {
     [Route("Admin/[Controller]/[Action]/{id?}")]
+    [Authorize(Roles = "admin")]
     public class LifeInsuranceController : Controller
     {
         private readonly LifeInsuranceService _lifeInsurance;

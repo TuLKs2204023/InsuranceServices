@@ -86,6 +86,7 @@
 					{
 						@if (User.IsInRole("user"))
 						{
+							<a href="/lifeInsuranceHolder" class="text-white-50 ms-4">Subscriptions</a>
 							<a asp-action="Profile" asp-route-id="@User.Identity.Name" asp-controller="Home" class="text-white-50 ms-4">Profile</a>
 						}
 

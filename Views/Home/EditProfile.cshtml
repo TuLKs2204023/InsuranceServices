@@ -73,7 +73,7 @@
 									<div class="row">
 										<div class="col-lg-6">
 											<div class="form-group focused">
-												<label class="form-control-label">Date of Birth (required Age from 18 to 150) <span class="text-danger">(&#8727;)</span></label>
+												<label class="form-control-label">Date of Birth <span class="text-danger">(required Age from 18 to 150) (&#8727;)</span></label>
 
 												<input asp-for="DateOfBirth" type="date" id="dob" class="form-control form-control-alternative" value="@Model.DateOfBirth.ToString("yyyy/MM/dd").Replace('/','-')" max="@DateTime.Now.ToString("yyyy-MM-dd")">
 												@* <input asp-for="DateOfBirth" type="date" class="form-control form-control-alternative" value="@Model.DateOfBirth.ToString("yyyy/MM/dd").Replace('/','-')" id="dob"> *@
@@ -111,16 +111,19 @@
 								<!-- Address -->
 								<h6 class="heading-small text-muted mb-4">Contact information <span class="text-danger">(&#8727;)</span></h6>
 								<div class="pl-lg-4">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group focused">
-												<label class="form-control-label">Old Address</label>
+									@if(Model.Address !=null){
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group focused">
+													<label class="form-control-label">Old Address</label>
 
-												<input class="form-control form-control-alternative" value="@Model.Address" placeholder="Not Updated" type="text" id="oldAddress">
+													<input class="form-control form-control-alternative" value="@Model.Address" placeholder="Not Updated" type="text" id="oldAddress" readonly>
 
+												</div>
 											</div>
 										</div>
-									</div>
+									}
+									
 									<div class="row">
 										<div class="col-lg-4">
 											<div class="form-group focused">
@@ -147,7 +150,7 @@
 										<div class="col-lg-4">
 											<div class="form-group">
 												<label class="form-control-label">Street</label>
-												<input class="form-control form-control-alternative" id="house" onchange="return wardSubmit();">
+												<input class="form-control form-control-alternative" id="house" onkeyup="return wardSubmit();">
 												<input asp-for="Address" type="hidden" id="newAddress">
 
 											</div>

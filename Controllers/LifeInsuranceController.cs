@@ -10,7 +10,7 @@ using test0000001.Repository.ServiceClass.LifeInsurance;
 
 namespace test0000001.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "user")]
     public class LifeInsuranceController : Controller
     {
         private readonly UserManager<ApplicationUser> _usrMgr;

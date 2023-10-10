@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using test0000001.Clients;
 using test0000001.Extensions;
@@ -9,9 +10,10 @@ using test0000001.Repository.ServiceClass.LifeInsurance;
 
 namespace test0000001.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "user")]
     public class LifeInsuranceHolderController : Controller
     {
+        private readonly UserManager<ApplicationUser> _usrMgr;
         private readonly PolicyHolderViewService _holderView;
         private readonly PolicyHolderService _policyHolder;
         private readonly PaymentScheduleService _schedule;
@@ -20,6 +22,7 @@ namespace test0000001.Controllers
         private readonly string _viewPath = "../LifeInsurance/PolicyHolder";
 
         public LifeInsuranceHolderController(
+            UserManager<ApplicationUser> usrMgr,
             PolicyHolderViewService holderView,
             PolicyHolderService policyHolder,
             PaymentScheduleService schedule,
@@ -27,11 +30,30 @@ namespace test0000001.Controllers
             MailingService mailing
             )
         {
+            _usrMgr = usrMgr;
             _holderView = holderView;
             _policyHolder = policyHolder;
             _schedule = schedule;
             _paypalClient = paypalClient;
             _mailing = mailing;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var user = await GetSignedInUser();
+                if (user == null) return NotFound();
+                var model = await Task.FromResult(_policyHolder.GetByUserId(user.Id));
+                ViewBag.DueCounts = _schedule.GetDueCountsByUserId(user.Id);
+                return View($"{_viewPath}/Index", model);
+			}
+            catch (Exception e)
+            {
+				var error = new { e.GetBaseException().Message };
+				return BadRequest(error);
+			}
         }
 
         [HttpGet]
@@ -50,8 +72,9 @@ namespace test0000001.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e);
-            }
+				var error = new { e.GetBaseException().Message };
+				return BadRequest(error);
+			}
         }
 
         [HttpGet]
@@ -125,7 +148,8 @@ namespace test0000001.Controllers
                 await Task.FromResult(_schedule.AddPayment(payment));
                 await Task.FromResult(_schedule.SetPaymentToPaid(id, payment.Id));
                 model.PaidItem = _schedule.GetById(id, asNoTracking: true);
-                TempData.Put("PaypalPaymentDto", model);
+                //TempData.Put("PaypalPaymentDto", model);
+                _schedule.SetPaypalPaymentObject(id, packageId, model);
 
                 return Ok(response);
             }
@@ -137,16 +161,18 @@ namespace test0000001.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PaypalSuccess()
+        [Route("[Controller]/{packageId}/[Action]/{id?}")]
+        public async Task<IActionResult> PaypalSuccess(int id, int packageId)
         {
-            var model = TempData.Get<PaypalPaymentDto>("PaypalPaymentDto");
+            //var model = TempData.Get<PaypalPaymentDto>("PaypalPaymentDto");
+            var model = _schedule.GetPaypalPaymentObject(id, packageId);
             if (model == null) return NotFound();
 
             model.Payment = _schedule.GetPaymentById(model.PaidItem!.PaymentId!.Value, asNoTracking: true);
             model.NextPaidItem = _schedule.GetNextPayment(model.PolicyHolderId, asNoTracking: true);
 
             await Mailing("kientvts2204051@fpt.edu.vn", "ptge rpvw hgew mnab", model);
-
+            _schedule.ClearPaypalPaymentObject(id, packageId);
             return View($"{_viewPath}/PaymentSuccess", model);
         }
 
@@ -234,6 +260,13 @@ namespace test0000001.Controllers
             {
                 throw;
             }
+        }
+
+        private async Task<ApplicationUser?> GetSignedInUser()
+        {
+            string username = User.Identity?.Name ?? string.Empty;
+            if (string.IsNullOrEmpty(username)) return null;
+            return await _usrMgr.FindByNameAsync(username);
         }
     }
 }

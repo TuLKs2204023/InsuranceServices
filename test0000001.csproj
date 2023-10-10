@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\HomeInsurance\Wait.cshtml" />
+    <Content Remove="Views\Home_Insurance\Wait.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +71,7 @@
     <Folder Include="wwwroot\lib\jquery\" />
     <Folder Include="wwwroot\lib\jquery\dist\" />
     <Folder Include="wwwroot\temp\contracts\LifeInsurance\" />
+    <Folder Include="wwwroot\temp\dossiers\LifeInsurance\" />
     <Folder Include="wwwroot\temp\dossiers\LifeInsurance\" />
   </ItemGroup>
 

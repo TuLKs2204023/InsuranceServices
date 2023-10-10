@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using test0000001.Models.LifeInsurance;
 using test0000001.Repository.ServiceClass.LifeInsurance;
 
 namespace test0000001.Controllers.Admin
 {
     [Route("Admin/[Controller]/[Action]/{id?}")]
+    [Authorize(Roles = "admin")]
     public class AppraisalQuesController : Controller
     {
         private readonly AppraisalQuesService _appraisalQues;

@@ -138,26 +138,41 @@
                                                                 <td style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
                                                             </tr>
                                                             <tr height="30"><td colspan="3" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td></tr>
-                                                            <tr align="center">
-                                                                <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
-                                                                <td style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;">
-                                                                    <p style="color: #5caad2; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; margin: 0;"><strong>Next due payment detail</strong></p>
-                                                                    <br>
-                                                                </td>
-                                                                <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
-                                                            </tr>
-                                                            <tr align="left">
-                                                                <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
-                                                                <td style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;">
-                                                                    <p style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; margin: 0; ">
-                                                                        Due date: <span style="color: #DC143C;">@Model.NextPaidItem?.DueDate.ToString("dd MMMM yyyy")</span> <br />
-                                                                        Amount: <span>@Model.NextPaidItem?.Amount USD</span> <br />
-                                                                        Description: <span>@Model.NextPaidItem?.Description</span>
-                                                                    </p>
-                                                                </td>
-                                                                <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
-                                                            </tr>
-
+                                                            @if (Model.NextPaidItem != null)
+                                                            {
+                                                                <tr align="center">
+                                                                    <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
+                                                                    <td style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;">
+                                                                        <p style="color: #5caad2; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; margin: 0;"><strong>Next due payment detail</strong></p>
+                                                                        <br>
+                                                                    </td>
+                                                                    <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
+                                                                </tr>
+                                                                <tr align="left">
+                                                                    <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
+                                                                    <td style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;">
+                                                                        <p style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; margin: 0; ">
+                                                                            Due date: <span style="color: #DC143C;">@Model.NextPaidItem?.DueDate.ToString("dd MMMM yyyy")</span> <br />
+                                                                            Amount: <span>@Model.NextPaidItem?.Amount USD</span> <br />
+                                                                            Description: <span>@Model.NextPaidItem?.Description</span>
+                                                                        </p>
+                                                                    </td>
+                                                                    <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr align="center">
+                                                                    <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
+                                                                    <td style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;">
+                                                                        <p style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; margin: 0;">
+                                                                            Congratulations, your subscription has been fully paid. We hope that you will find the joy and satisfaction with this package.
+                                                                        </p>
+                                                                        <br>
+                                                                    </td>
+                                                                    <td width="36" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
+                                                                </tr>
+                                                            }
                                                             <tr height="50">
                                                                 <td colspan="3" style="color: #464646; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 16px; vertical-align: top;"></td>
                                                             </tr>

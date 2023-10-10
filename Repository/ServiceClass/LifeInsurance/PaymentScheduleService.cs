@@ -11,14 +11,17 @@ namespace test0000001.Repository.ServiceClass.LifeInsurance
     {
         private readonly DatabaseContext _dbContext;
         private readonly PolicyHolderService _policyHolder;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PaymentScheduleService(
             DatabaseContext dbContext,
-            PolicyHolderService policyHolder
+            PolicyHolderService policyHolder,
+            IHttpContextAccessor httpContextAccessor
             )
         {
             _dbContext = dbContext;
             _policyHolder = policyHolder;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IEnumerable<PaymentSchedule> GetAll()
@@ -62,7 +65,6 @@ namespace test0000001.Repository.ServiceClass.LifeInsurance
 
         public List<DuePaymentCountDto> GetDueCounts()
         {
-
             return _dbContext.PaymentSchedule
                 .AsNoTracking()
                 .AsEnumerable()
@@ -77,6 +79,23 @@ namespace test0000001.Repository.ServiceClass.LifeInsurance
                 }).ToList();
         }
 
+        public List<DuePaymentCountDto> GetDueCountsByUserId(string userId)
+        {
+            return _dbContext.PaymentSchedule
+                .AsNoTracking()
+                .AsEnumerable()
+                .Where(m => m.UserId != null &&
+                        m.UserId.Equals(userId) &&
+                        _policyHolder.IsPackageActivated(m.PolicyHolderId))
+                .Where(m => m.DueDate.IsDue() &&
+                        !m.Status.Equals(PaymentStatus.Paid))
+                .GroupBy(m => m.PolicyHolderId)
+                .Select(group => new DuePaymentCountDto
+                {
+                    PolicyHolderId = group.Key,
+                    DueCount = group.Count()
+                }).ToList();
+        }
         public List<DuePaymentDto> GetDuePayments()
         {
             return _dbContext.PaymentSchedule
@@ -148,14 +167,32 @@ namespace test0000001.Repository.ServiceClass.LifeInsurance
                     .Where(m => m.PolicyHolderId.Equals(policyHolderId) &&
                         m.Status.Equals(PaymentStatus.NotDue))
                     .OrderBy(m => m.Id)
-                    .First() :
+                    .FirstOrDefault() :
                 _dbContext.PaymentSchedule?
                     .Where(m => m.PolicyHolderId.Equals(policyHolderId) &&
                         m.Status.Equals(PaymentStatus.NotDue))
                     .OrderBy(m => m.Id)
-                    .First();
+                    .FirstOrDefault();
         }
 
+        public void SetPaypalPaymentObject(int id, int packageId, PaypalPaymentDto paypalPaymentDto)
+        {
+            string key = $"PaypalPaymentDto_{packageId}_{id}";
+            _httpContextAccessor.HttpContext?.Session.Set(key, paypalPaymentDto);
+        }
 
+        public PaypalPaymentDto? GetPaypalPaymentObject(int id, int packageId)
+        {
+            string key = $"PaypalPaymentDto_{packageId}_{id}";
+            var session = _httpContextAccessor.HttpContext?.Session;
+            return session?.Get<PaypalPaymentDto>(key);
+        }
+
+        public void ClearPaypalPaymentObject(int id, int packageId)
+        {
+            string key = $"PaypalPaymentDto_{packageId}_{id}";
+            var session = _httpContextAccessor.HttpContext?.Session;
+            session?.Remove(key);
+        }
     }
 }

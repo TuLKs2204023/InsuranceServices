@@ -5,7 +5,7 @@ namespace test0000001.Attributes
 {
     public class StartDateValidation : ValidationAttribute, IClientModelValidator
     {
-        private static readonly DateTime _validDate = DateTime.Today.AddDays(7);
+        private static readonly DateTime _validDate = DateTime.Today.AddDays(3);
         private readonly string _errorMsg = "Start date cannot be less than " + _validDate.ToString("dd MMMM yyyy");
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {

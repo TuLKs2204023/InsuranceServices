@@ -68,7 +68,7 @@
                                     @Html.DisplayFor(modelItem => item.Name)
                                 </td>
                                 <td class="desc-col-width align-top">
-                                    @Html.GetShortDescription(item.Description)
+                                    @Html.Raw(Html.GetShortDescription(item.Description))
                                 </td>
                                 <td class="align-top">
                                     @(item.Duration != null ? item.Duration.Term / 12 : "")

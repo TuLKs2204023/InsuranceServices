@@ -120,6 +120,12 @@
                                 </ul>
                             </li>
                             <li class="sidebar-item">
+                                <a asp-action="index" asp-controller="InsuranceCategory" class="sidebar-link">
+                                    <i class="bi bi-grid-fill"></i>
+                                    <span>Insurance Category</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
                                 <a asp-action="index" asp-controller="Duration" class="sidebar-link">
                                     <i class="bi bi-grid-fill"></i>
                                     <span>Duration</span>
@@ -177,6 +183,21 @@
 
                                     <li class="submenu-item">
                                         <a asp-action="HealthPolicyList" asp-controller="HealthInsurance" class="submenu-link">List Policy</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-item has-sub">
+                                <a href="#" class="sidebar-link">
+                                    <i class="bi bi-stack"></i>
+                                    <span>Motor Insurance</span>
+                                </a>
+
+                                <ul class="submenu">
+                                    <li class="submenu-item">
+                                        <a asp-action="CreateMotorPolicy" asp-controller="MotorInsurance" class="submenu-link">Create Motor Policy</a>
+                                    </li>
+                                    <li class="submenu-item">
+                                        <a asp-action="MotorPolicyList" asp-controller="MotorInsurance" class="submenu-link">List Motor Policy</a>
                                     </li>
                                 </ul>
                             </li>

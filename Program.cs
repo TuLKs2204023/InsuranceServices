@@ -27,7 +27,7 @@ builder.Services.AddControllersWithViews().AddJsonOptions(x => x.JsonSerializerO
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(20);
-    options.Cookie.HttpOnly = true;  
+    options.Cookie.HttpOnly = true;
 });
 //builder.Services.AddSession();
 
@@ -59,9 +59,11 @@ builder.Services.AddScoped<MailingService>();
 builder.Services.AddScoped<PdfHandlerService>();
 builder.Services.AddSingleton(x =>
     new test0000001.Clients.PaypalForLifeClient(
-        "ATJJo9jp9vmOFvFJ_qqmRIBVtkDODFUVacat2BRWIpk5UoFQgokh5GhJp67L7H0E_TdiViSpVRmqW2BL",
-        "ED4ujxp1lrG1xRF1CTTYVKIcfXzG3QwlXeDcn4goUQ0oqKe3m_0bvWGGyopSNL8vs1p8o1IqmXjxC-BZ",
-        "Sandbox"
+		"AWHX_ZpW3EUyQpQD4q_koPq8uUZ_aXXnicPiFdqLJQX1NBHN0730PRjJK_qfH1VhfgIQpGuMS8GGOk7B",
+		"EJuT6_wKiycjFVQsavcPkx8upTn4ez7unNtFX3QLNzWy4bI5PXsWwom7eWCn7R1cfEn9FXM5AuvAOw5T",
+		//"ATJJo9jp9vmOFvFJ_qqmRIBVtkDODFUVacat2BRWIpk5UoFQgokh5GhJp67L7H0E_TdiViSpVRmqW2BL",
+		//"ED4ujxp1lrG1xRF1CTTYVKIcfXzG3QwlXeDcn4goUQ0oqKe3m_0bvWGGyopSNL8vs1p8o1IqmXjxC-BZ",
+		"Sandbox"
     )
 );
 
@@ -70,36 +72,32 @@ builder.Services.AddScoped<IMotorInsurance, MotorInsuranceServices>();
 //identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DatabaseContext>().AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(opt =>
-{
-	opt.LoginPath = "/Login/Welcome";
-	opt.ExpireTimeSpan = TimeSpan.FromDays(1);
-	opt.AccessDeniedPath = new PathString("/Account/AccessDenied");
-});
+// Set the time of token forgot password validity
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(10));
 
-//Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+// Service Google login
+
+builder.Services
+    .AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+    .AddCookie(opt =>
 {
     opt.LoginPath = "/Login/Welcome";
     opt.ExpireTimeSpan = TimeSpan.FromDays(1);
     opt.AccessDeniedPath = new PathString("/Account/AccessDenied");
 
-});
-
-// Set the time of token forgot password validity
-builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(10));
-
-// Service Google login
-builder.Services.AddAuthentication(options =>
+})
+    .AddGoogle(GoogleDefaults.AuthenticationScheme, opts =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-}).AddGoogle(GoogleDefaults.AuthenticationScheme, opts =>
-{
-	opts.ClientId = "1057076628569-h9uah1ovgr05s4gsl5kp1r46d4q9gjt2.apps.googleusercontent.com";
+    opts.ClientId = "1057076628569-h9uah1ovgr05s4gsl5kp1r46d4q9gjt2.apps.googleusercontent.com";
     opts.ClientSecret = "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";
     //opts.CallbackPath = "/Login/GoogleResponse";
-    opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //opts.SignInScheme = GoogleDefaults.AuthenticationScheme;
     opts.SaveTokens = true;
     opts.CorrelationCookie.SameSite = SameSiteMode.Lax;
 });

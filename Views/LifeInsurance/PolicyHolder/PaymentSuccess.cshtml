@@ -81,25 +81,31 @@
                                                 <dt class="col-sm-3">Description</dt>
                                                 <dd class="col-sm-9 text-primary">
                                                     @Model.PaidItem?.Description for the package
-                                                    "@Model.PackageOverview?.Package?.Name?.ToUpper()" 
+                                                    "@Model.PackageOverview?.Package?.Name?.ToUpper()"
                                                     [#ref: @Model.PackageOverview?.InsuredObject.AppraisalManifestId]
                                                 </dd>
                                             </dl>
                                         </div>
 
                                         <div class="row mb-3">
-                                            <div class="text-primary fw-bold">Next due payment detail:</div>
-                                            <dl class="d-flex flex-wrap bg-light shadow-md p-4 border rounded">
-                                                <dt class="col-sm-3">Due date</dt>
-                                                <dd class="col-sm-9 text-danger fw-bold">@Model.NextPaidItem?.DueDate.ToString("dd MMMM yyyy")</dd>
+                                            @if (Model.NextPaidItem != null)
+                                            {
+                                                <div class="text-primary fw-bold">Next due payment detail:</div>
+                                                <dl class="d-flex flex-wrap bg-light shadow-md p-4 border rounded">
+                                                    <dt class="col-sm-3">Due date</dt>
+                                                    <dd class="col-sm-9 text-danger fw-bold">@Model.NextPaidItem?.DueDate.ToString("dd MMMM yyyy")</dd>
 
-                                                <dt class="col-sm-3">Amount</dt>
-                                                <dd class="col-sm-9 text-primary fw-bold">@Model.NextPaidItem?.Amount USD</dd>
+                                                    <dt class="col-sm-3">Amount</dt>
+                                                    <dd class="col-sm-9 text-primary fw-bold">@Model.NextPaidItem?.Amount USD</dd>
 
-                                                <dt class="col-sm-3">Description</dt>
-                                                <dd class="col-sm-9 text-primary">@Model.NextPaidItem?.Description</dd>
-
-                                            </dl>
+                                                    <dt class="col-sm-3">Description</dt>
+                                                    <dd class="col-sm-9 text-primary">@Model.NextPaidItem?.Description</dd>
+                                                </dl>
+                                            }
+                                            else
+                                            {
+                                                <div>Congratulations, your subscription has been fully paid. We hope that you will find the joy and satisfaction with this package.</div>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -110,7 +116,7 @@
                                 <br />
                                 In case of any inquires occurred, please feel free to contact us.
                             </p>
-                            <a class="btn btn-outline-primary" href="/Home/PolicyHolder">Back to Subscriptions</a>
+                            <a class="btn btn-outline-primary" href="/LifeInsuranceHolder/Details/@Model.PolicyHolderId">Back to Subscription</a>
                         </div>
                     </div>
                 </div>
