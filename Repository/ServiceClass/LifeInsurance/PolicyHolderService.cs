@@ -46,7 +46,10 @@ namespace test0000001.Repository.ServiceClass.LifeInsurance
         public IEnumerable<Policyholder> GetByStatus(string status)
         {
             return _dbContext.Policyholder
-                    .Where(m => m.Status != null && m.Status.Equals(status))
+                    .Where(m => m.Policy!= null && 
+                        m.Policy.InsuranceCategoryId.Equals(1) && 
+                        m.Status != null && 
+                        m.Status.Equals(status))
                     .ToList();
         }
 
