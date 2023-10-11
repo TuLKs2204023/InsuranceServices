@@ -1,6 +1,13 @@
 {
   "profiles": {
-    "test0000001": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "InsuranceService": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -8,13 +15,6 @@
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5169"
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
     }
   },
   "iisSettings": {
